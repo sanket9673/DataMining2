@@ -1,0 +1,25 @@
+# Load necessary libraries
+library(cluster)
+library(factoextra)
+
+# Read the dataset
+data <- read.csv("C:/Users/Sanket Chavhan/Documents/22MIS1116 DMT 2/student-scores.csv")
+
+# Select only numeric columns for clustering
+numeric_data <- data[sapply(data, is.numeric)]
+
+# Standardize the numeric data
+data_scaled <- scale(numeric_data)
+
+# Compute CLARA clustering
+set.seed(123) # for reproducibility
+clara_res <- clara(data_scaled, 3) # assuming you want to find 3 clusters
+
+# Print the cluster assignments
+print(clara_res$clustering)
+
+# Plot the clusters with ellipses
+fviz_cluster(clara_res, data = data_scaled, geom = "point", stand = FALSE, ellipse = TRUE)
+
+# Plot the silhouette diagram
+fviz_silhouette(clara_res)

@@ -1,0 +1,33 @@
+# Load the necessary library
+library(cluster)
+
+# Read the dataset
+student_scores <- read.csv("C:/Users/Sanket Chavhan/Documents/22MIS1116 DMT 2/student-scores.csv")
+
+# Subset the dataset to include only the first 100 observations
+student_scores_subset <- student_scores[1:100, ]
+
+# Select 'math_score' and 'english_score' columns for clustering
+selected_columns <- student_scores_subset[, c('math_score', 'english_score')]
+
+# Scale the data
+scaled_data <- scale(selected_columns)
+
+# Perform AGNES clustering
+agnes_result <- agnes(scaled_data, method = "average") # You can also use other methods like 'single', 'complete', etc.
+
+# Convert AGNES object to an hclust object
+hclust_result <- as.hclust(agnes_result)
+
+# Cut the dendrogram to obtain the desired number of clusters
+num_clusters <- 3
+cluster_assignments <- cutree(hclust_result, k = num_clusters)
+
+# Print the cluster assignments
+print(cluster_assignments)
+
+# Plot the dendrogram
+plot(agnes_result, which.plots = 2, main = "Dendrogram for AGNES Clustering")
+
+# Highlight the clusters on the dendrogram
+rect.hclust(hclust_result, k = num_clusters, border = "red")

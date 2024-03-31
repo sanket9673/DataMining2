@@ -1,0 +1,37 @@
+# Load the necessary library
+library(cluster)
+
+# Read the dataset
+student_scores <- read.csv("C:/Users/Sanket Chavhan/Documents/22MIS1116 DMT 2/student-scores.csv")
+
+# Select 'math_score' and 'english_score' columns for clustering
+selected_columns <- student_scores[, c('math_score', 'english_score')]
+
+# Scale the data
+scaled_data <- scale(selected_columns)
+
+# Perform PAM clustering
+# Set the desired number of clusters
+num_clusters <- 3
+pam_result <- pam(scaled_data, k = num_clusters)
+
+# Extract the cluster assignments from the results
+cluster_assignments <- pam_result$clustering
+
+# Print the clustering vector
+print(cluster_assignments)
+
+# Plot the clusters
+# Open a new plotting device
+dev.new()
+
+# Create a scatter plot of the scaled data colored by cluster assignment
+plot(scaled_data, col = cluster_assignments, pch = 20, main = "PAM Clustering of Student Scores",
+     xlab = "Math Score", ylab = "English Score")
+
+# Add cluster medoids to the plot
+points(pam_result$medoids, col = 1:num_clusters, pch = 4, cex = 4, lwd = 2)
+
+# Add a legend to the plot
+legend('topright', legend = paste('Cluster', 1:num_clusters),
+       col = 1:num_clusters, pch = 20, title = "Clusters")

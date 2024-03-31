@@ -1,0 +1,27 @@
+# Load necessary library
+library(cluster)
+
+# Read the dataset
+data <- read.csv("C:/Users/Sanket Chavhan/Documents/22MIS1116 DMT 2/student-scores.csv")
+
+# Select only numeric columns for clustering
+numeric_data <- data[sapply(data, is.numeric)]
+
+# Remove rows with NAs
+numeric_data <- na.omit(numeric_data)
+
+# Compute the dissimilarity matrix
+dissimilarity_matrix <- dist(numeric_data)
+
+# Perform hierarchical clustering using Ward's method
+hc <- hclust(dissimilarity_matrix, method = "ward.D2")
+
+# Cut the dendrogram to create a specified number of clusters, e.g., 5
+clusters <- cutree(hc, k = 5)
+
+# Print the cluster assignments
+print(clusters)
+
+# Plot the dendrogram
+plot(hc, hang = -1, labels = FALSE, main = "Hierarchical Clustering Dendrogram")
+rect.hclust(hc, k = 5, border = "red")  # Add rectangles for 5 clusters

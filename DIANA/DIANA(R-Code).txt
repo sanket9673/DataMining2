@@ -1,0 +1,29 @@
+# Load necessary libraries
+library(cluster)
+library(factoextra)
+
+# Read the dataset
+data <- read.csv("C:/Users/Sanket Chavhan/Documents/22MIS1116 DMT 2/student-scores.csv")
+
+# Select only numeric columns for clustering
+numeric_data <- data[sapply(data, is.numeric)]
+
+# Perform DIANA clustering
+diana_res <- diana(numeric_data)
+
+# Determine the number of clusters (for example, 3)
+k <- 3
+
+# Print the cluster assignments
+cluster_assignments <- cutree(diana_res, k)
+print(cluster_assignments)
+
+# Plot the dendrogram
+plot(diana_res, which.plots = 2)
+
+# Enhanced dendrogram with factoextra
+fviz_dend(diana_res, rect = TRUE, show_labels = FALSE)
+
+# Plot the silhouette plot
+silhouette_plot <- silhouette(cluster_assignments, dist(numeric_data))
+plot(silhouette_plot)

@@ -1,0 +1,62 @@
+# Loading packages
+library(cluster)
+library(ggplot2)
+
+# Read the dataset
+student_scores <- read.csv("C:/Users/Sanket Chavhan/Documents/22MIS1116 DMT 2/student-scores.csv")
+
+# Select numerical columns for clustering
+selected_cols <- student_scores[, c("absence_days", "weekly_self_study_hours", "math_score", "history_score", "physics_score", "chemistry_score", "biology_score", "english_score", "geography_score")]
+
+# Scale the data
+scaled_data <- scale(selected_cols)
+
+# Fitting K-Medoids clustering Model to training dataset
+set.seed(240) # Setting seed for reproducibility
+kmedoids_result <- pam(scaled_data, k = 3, diss = FALSE)
+
+# Cluster identification for each observation
+clusters <- kmedoids_result$clustering
+
+# Model Evaluation and visualization
+# Plotting the clusters using the first two principal components
+pca <- prcomp(scaled_data)
+pca_data <- data.frame(pca$x[, 1:2], cluster = clusters)
+
+# Extracting the coordinates of the medoids from the original scaled data
+# We use the id.med attribute to get the correct indices of the medoids
+medoids_indices <- kmedoids_result$id.med
+if(any(medoids_indices <= 0)) {
+  stop("Medoid indices are not valid. Please check the pam object.")
+}
+
+# Transforming the medoid coordinates using the PCA rotation matrix
+medoids_pca_coords <- medoids_coords %*% pca$rotation[, 1:2]
+
+# Creating a data frame for the medoid coordinates with the correct column names
+medoids_pca_df <- data.frame(PC1 = medoids_pca_coords[, 1], PC2 = medoids_pca_coords[, 2])
+
+ggplot(pca_data, aes(x = PC1, y = PC2, color = as.factor(cluster))) +
+  geom_point(alpha = 0.7, size = 2) +  # Adjust alpha and size for better visibility
+  scale_color_brewer(palette = "Set1") +  # Enhanced color palette for contrast
+  labs(title = "K-Medoids Clustering of Student Scores",
+       x = "Principal Component 1",
+       y = "Principal Component 2") +
+  geom_point(data = medoids_pca_df, 
+             aes(x = PC1, y = PC2), color = "black", size = 3, shape = 8) +
+  theme_minimal() +
+  theme(legend.position = "right")  # Adjust legend position if needed
+
+
+# Visualizing clusters with clusplot (using the first two principal components)
+clusplot(pca_data[, c("PC1", "PC2")],
+         clusters,
+         lines = 0,
+         shade = TRUE,
+         color = TRUE,
+         labels = 2,
+         plotchar = FALSE,
+         span = TRUE,
+         main = "Cluster of Student Scores",
+         xlab = 'Principal Component 1',
+         ylab = 'Principal Component 2')

@@ -1,0 +1,35 @@
+# Load the necessary library
+library(dbscan)
+
+# Read the dataset
+student_scores <- read.csv("C:/Users/Sanket Chavhan/Documents/22MIS1116 DMT 2/student-scores.csv")
+
+# Subset the dataset to include only the first 100 observations
+student_scores_subset <- student_scores[1:100, ]
+
+# Select 'math_score' and 'english_score' columns for clustering
+selected_columns <- student_scores_subset[, c('math_score', 'english_score')]
+
+# Scale the data
+scaled_data <- scale(selected_columns)
+
+# Perform DBSCAN clustering
+# eps is the maximum distance between two samples for them to be considered as in the same neighborhood
+# minPts is the number of samples in a neighborhood for a point to be considered as a core point
+dbscan_result <- dbscan(scaled_data, eps = 0.5, minPts = 5)
+
+# Plot the clusters
+plot(scaled_data, col = dbscan_result$cluster + 1L, pch = 20, main = "CHAMELEON Clustering of Student Scores",
+     xlab = "Math Score", ylab = "English Score")
+legend("topright", legend = unique(dbscan_result$cluster), 
+       col = 1:length(unique(dbscan_result$cluster)) + 1L, pch = 20, 
+       title = "Clusters")
+
+# Print the count of points in each cluster
+cat("Count of points in each cluster:\n")
+print(table(dbscan_result$cluster))
+
+# Print the cluster assignments
+cat("\nCluster assignments for each point:\n")
+print(dbscan_result$cluster)
+
